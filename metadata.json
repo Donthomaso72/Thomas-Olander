@@ -1,0 +1,7 @@
+{
+  "name": "Nestor Retro Rock Experience",
+  "description": "A nostalgic 80s-inspired fan app for the Swedish rock band Nestor, featuring a power ballad lyric generator, custom album art creator, and rock persona generator.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
