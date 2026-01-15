@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Zap, Music, Disc, Flame, Users, Share2, X, Copy, QrCode, ShieldAlert, AlertTriangle } from 'lucide-react';
+import { Zap, Music, Disc, Flame, Users, Share2, X, AlertTriangle } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import RockNameGenerator from './components/RockNameGenerator.tsx';
 import LyricRewriter from './components/LyricRewriter.tsx';
@@ -16,9 +15,12 @@ const App: React.FC = () => {
   const [apiKeyMissing, setApiKeyMissing] = useState(false);
 
   useEffect(() => {
+    // Check for standard Netlify/Vite env var
     // @ts-ignore
-    const key = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.API_KEY;
-    if (!key) {
+    const viteKey = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GEMINI_API_KEY : null;
+    const processKey = typeof process !== 'undefined' ? process.env.API_KEY : null;
+    
+    if (!viteKey && !processKey) {
       setApiKeyMissing(true);
     }
   }, []);
@@ -38,9 +40,9 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {apiKeyMissing && (
-        <div className="bg-amber-500 text-black px-4 py-2 text-center font-bold text-xs uppercase flex items-center justify-center gap-2">
-          <AlertTriangle size={16} /> 
-          API-nyckel saknas! Gå till Netlify Site Settings -> Environment Variables och lägg till VITE_GEMINI_API_KEY.
+        <div className="bg-amber-500 text-black px-4 py-3 text-center font-bold text-xs uppercase flex items-center justify-center gap-2 z-[200]">
+          <AlertTriangle size={18} /> 
+          Systemfel: Ingen API-nyckel hittades. Lägg till VITE_GEMINI_API_KEY i Netlify Dashboard.
         </div>
       )}
       

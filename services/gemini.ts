@@ -1,22 +1,24 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 /**
- * Retrieves the API key for Netlify or local development.
- * On Netlify, you MUST name the variable VITE_GEMINI_API_KEY.
+ * Retrieves the API key.
+ * On Netlify, make sure to add VITE_GEMINI_API_KEY to Site Settings -> Environment Variables.
  */
 const getApiKey = () => {
-  // @ts-ignore - Netlify/Vite standard for environment variables in the browser
-  const viteKey = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GEMINI_API_KEY : null;
-  
-  // Fallback for Node-based environments or local process.env
-  const processKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : null;
-  
-  const key = viteKey || processKey || "";
-
-  if (!key) {
-    console.warn("API_KEY_MISSING: The application cannot connect to Gemini. Please set VITE_GEMINI_API_KEY in your Netlify Environment Variables.");
+  // Check for Vite/Netlify specific variable first
+  // @ts-ignore
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) {
+    // @ts-ignore
+    return import.meta.env.VITE_GEMINI_API_KEY;
   }
-  return key;
+  
+  // Fallback for local process.env or other environments
+  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+    return process.env.API_KEY;
+  }
+
+  // Final fallback (can be empty string, but logic will check for truthiness)
+  return "";
 };
 
 const extractJSON = (text: string) => {
@@ -88,9 +90,10 @@ export const generateAlbumArt = async (title: string) => {
     },
   });
 
-  const part = response.candidates[0].content.parts.find(p => p.inlineData);
-  if (part?.inlineData) {
-    return `data:image/png;base64,${part.inlineData.data}`;
+  for (const part of response.candidates[0].content.parts) {
+    if (part.inlineData) {
+      return `data:image/png;base64,${part.inlineData.data}`;
+    }
   }
   throw new Error("Ingen bild kunde skapas.");
 };
