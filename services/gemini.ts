@@ -1,20 +1,20 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 /**
- * Hämtar API-nyckeln på ett säkert sätt för Netlify.
- * Variabeln MÅSTE heta VITE_GEMINI_API_KEY i Netlify UI.
+ * Retrieves the API key for Netlify or local development.
+ * On Netlify, you MUST name the variable VITE_GEMINI_API_KEY.
  */
 const getApiKey = () => {
-  // @ts-ignore - För Vite/Netlify miljöer
-  const viteKey = typeof import.meta !== 'undefined' && (import.meta as any).env ? (import.meta as any).env.VITE_GEMINI_API_KEY : null;
+  // @ts-ignore - Netlify/Vite standard for environment variables in the browser
+  const viteKey = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GEMINI_API_KEY : null;
   
-  // Fallback för process.env (Node/Replit)
-  const processKey = typeof process !== 'undefined' ? process.env.API_KEY : null;
+  // Fallback for Node-based environments or local process.env
+  const processKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : null;
   
   const key = viteKey || processKey || "";
 
   if (!key) {
-    console.error("API_KEY_MISSING: Gå till Netlify -> Site Configuration -> Environment Variables och lägg till VITE_GEMINI_API_KEY");
+    console.warn("API_KEY_MISSING: The application cannot connect to Gemini. Please set VITE_GEMINI_API_KEY in your Netlify Environment Variables.");
   }
   return key;
 };
