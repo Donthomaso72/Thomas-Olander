@@ -18,9 +18,8 @@ const App: React.FC = () => {
     // Check for standard Netlify/Vite env var
     // @ts-ignore
     const viteKey = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GEMINI_API_KEY : null;
-    const processKey = typeof process !== 'undefined' && process.env ? process.env.API_KEY : null;
     
-    if (!viteKey && !processKey) {
+    if (!viteKey) {
       setApiKeyMissing(true);
     } else {
       setApiKeyMissing(false);
@@ -47,7 +46,7 @@ const App: React.FC = () => {
             <AlertTriangle size={20} /> 
             <span>STRÖMAVBROTT I FALKÖPING!</span>
           </div>
-          <span className="opacity-90">Döpt om din API-nyckel till <code className="bg-black/20 px-1 rounded text-white">VITE_GEMINI_API_KEY</code> i Netlify!</span>
+          <span className="opacity-90">Lägg till <code className="bg-black/20 px-1 rounded text-white font-mono">VITE_GEMINI_API_KEY</code> i Netlify Site Settings!</span>
         </div>
       )}
       
@@ -63,7 +62,7 @@ const App: React.FC = () => {
             onClick={() => setShowShareModal(true)}
             className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-pink-600/20 border-2 border-pink-500 rounded-full text-pink-500 font-retro text-[9px] uppercase hover:bg-pink-500 hover:text-white transition-all shadow-lg"
           >
-            <Share2 size(14) /> Dela Upplevelsen
+            <Share2 size={14} /> Dela Upplevelsen
           </button>
         </div>
       </header>

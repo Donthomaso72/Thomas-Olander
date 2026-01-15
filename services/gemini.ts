@@ -1,20 +1,20 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 /**
- * Hämtar API-nyckeln.
- * På Netlify MÅSTE du lägga till VITE_GEMINI_API_KEY i Site Settings.
+ * Hämtar API-nyckeln från miljövariabler.
+ * På Netlify används VITE_GEMINI_API_KEY.
  */
 const getApiKey = () => {
-  // @ts-ignore - Vite/Netlify miljövariabel
+  // @ts-ignore - Miljövariabel i Vite/Netlify
   const viteKey = import.meta.env?.VITE_GEMINI_API_KEY;
   
-  // Fallback för process.env om import.meta inte är tillgängligt
+  // Fallback för andra miljöer
   const processKey = typeof process !== 'undefined' ? process.env.API_KEY : null;
   
   const key = viteKey || processKey || "";
 
   if (!key) {
-    console.error("INGEN API-NYCKEL HITTAD! Kontrollera VITE_GEMINI_API_KEY i Netlify.");
+    console.error("Saknar API-nyckel: VITE_GEMINI_API_KEY ej hittad.");
   }
   return key;
 };
