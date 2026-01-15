@@ -1,24 +1,22 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 /**
- * Retrieves the API key.
- * On Netlify, make sure to add VITE_GEMINI_API_KEY to Site Settings -> Environment Variables.
+ * Hämtar API-nyckeln.
+ * På Netlify MÅSTE du lägga till VITE_GEMINI_API_KEY i Site Settings.
  */
 const getApiKey = () => {
-  // Check for Vite/Netlify specific variable first
-  // @ts-ignore
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY) {
-    // @ts-ignore
-    return import.meta.env.VITE_GEMINI_API_KEY;
-  }
+  // @ts-ignore - Vite/Netlify miljövariabel
+  const viteKey = import.meta.env?.VITE_GEMINI_API_KEY;
   
-  // Fallback for local process.env or other environments
-  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-    return process.env.API_KEY;
-  }
+  // Fallback för process.env om import.meta inte är tillgängligt
+  const processKey = typeof process !== 'undefined' ? process.env.API_KEY : null;
+  
+  const key = viteKey || processKey || "";
 
-  // Final fallback (can be empty string, but logic will check for truthiness)
-  return "";
+  if (!key) {
+    console.error("INGEN API-NYCKEL HITTAD! Kontrollera VITE_GEMINI_API_KEY i Netlify.");
+  }
+  return key;
 };
 
 const extractJSON = (text: string) => {
@@ -90,10 +88,9 @@ export const generateAlbumArt = async (title: string) => {
     },
   });
 
-  for (const part of response.candidates[0].content.parts) {
-    if (part.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
-    }
+  const part = response.candidates[0].content.parts.find(p => p.inlineData);
+  if (part?.inlineData) {
+    return `data:image/png;base64,${part.inlineData.data}`;
   }
   throw new Error("Ingen bild kunde skapas.");
 };
