@@ -2,14 +2,21 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 /**
- * Hämtar API-nyckeln. 
- * På Netlify bör du döpa din variabel till VITE_GEMINI_API_KEY
+ * Hämtar API-nyckeln på ett säkert sätt.
+ * Netlify/Vite kräver ofta prefixet VITE_ för att exponera variabler till klienten.
  */
 const getApiKey = () => {
-  // Försök hämta från olika vanliga miljövariabel-namn
-  const key = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.API_KEY || "";
+  // 1. Kolla Vite-standard (Netlify rekommenderar ofta detta)
+  // 2. Kolla process.env (Replit/Node standard)
+  // 3. Kolla window-objektet som nödlösning
+  const key = 
+    (import.meta as any).env?.VITE_GEMINI_API_KEY || 
+    (import.meta as any).env?.API_KEY ||
+    process.env.API_KEY || 
+    "";
+
   if (!key) {
-    console.warn("API-nyckel saknas. Kontrollera miljövariabler.");
+    console.error("CRITICAL: API_KEY is missing. Make sure to set VITE_GEMINI_API_KEY in Netlify Environment Variables.");
   }
   return key;
 };
@@ -28,7 +35,10 @@ const extractJSON = (text: string) => {
 };
 
 export const generateRockPersona = async (name: string, favoriteFood: string) => {
-  const ai = new GoogleGenAI({ apiKey: getApiKey() });
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error("API_KEY_MISSING");
+
+  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Generate a fun 80s hard rock stage name and persona for someone named "${name}" who likes "${favoriteFood}". Return ONLY a JSON object.`,
@@ -50,7 +60,10 @@ export const generateRockPersona = async (name: string, favoriteFood: string) =>
 };
 
 export const rewriteAsBallad = async (input: string) => {
-  const ai = new GoogleGenAI({ apiKey: getApiKey() });
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error("API_KEY_MISSING");
+
+  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Rewrite this as a dramatic 80s power ballad in the style of the band Nestor: "${input}". Use [Verse] and [Chorus] markers.`,
@@ -59,7 +72,10 @@ export const rewriteAsBallad = async (input: string) => {
 };
 
 export const generateAlbumArt = async (title: string) => {
-  const ai = new GoogleGenAI({ apiKey: getApiKey() });
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error("API_KEY_MISSING");
+
+  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash-image',
     contents: {
