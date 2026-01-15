@@ -1,12 +1,15 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// I Replit sätts API_KEY i 'Secrets' fliken.
+/**
+ * Hämtar API-nyckeln. 
+ * På Netlify bör du döpa din variabel till VITE_GEMINI_API_KEY
+ */
 const getApiKey = () => {
-  const key = process.env.API_KEY;
+  // Försök hämta från olika vanliga miljövariabel-namn
+  const key = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.API_KEY || "";
   if (!key) {
-    console.warn("API_KEY saknas i Secrets. Appen kommer inte kunna generera innehåll.");
-    return "";
+    console.warn("API-nyckel saknas. Kontrollera miljövariabler.");
   }
   return key;
 };

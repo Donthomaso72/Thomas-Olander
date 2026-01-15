@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Permissions-Policy" content="camera=*, microphone=(), geolocation=()">
     <title>NESTOR - Kids in a Ghost Town Experience</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,7 +28,6 @@
     </script>
 
     <style type="text/css">
-        /* TVINGA fram 80-talslooken */
         html, body {
             background-color: #050505 !important;
             color: #ffffff !important;
@@ -35,7 +35,6 @@
             padding: 0;
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
         }
 
         #root {
@@ -55,7 +54,6 @@
           box-shadow: 0 0 10px #ec4899, inset 0 0 5px #ec4899 !important;
         }
 
-        /* VHS Scanlines */
         .vhs-effect::before {
             content: " ";
             display: block;
@@ -66,13 +64,16 @@
             z-index: 9999;
             background-size: 100% 4px, 4px 100%;
             pointer-events: none;
-            opacity: 0.3;
+            opacity: 0.2;
         }
 
-        /* Anpassning för Replit-fönstret */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #ec4899; border-radius: 10px; }
+        
+        /* Fix för navigation på små skärmar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 
     <script type="importmap">
@@ -84,14 +85,14 @@
     "lucide-react": "https://esm.sh/lucide-react@0.460.0?deps=react@19.0.0",
     "@google/genai": "https://esm.sh/@google/genai@1.34.0",
     "qrcode.react": "https://esm.sh/qrcode.react@4.1.0?deps=react@19.0.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
   }
 }
 </script>
 </head>
 <body class="vhs-effect">
     <div id="root"></div>
-    <script type="text/babel" data-type="module" data-presets="react,typescript" src="./index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>
