@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, Send, User, Calendar, Trash2, Zap } from 'lucide-react';
-import { playSynthSound } from '../services/audio';
+import { playSynthSound } from '../services/audio.ts';
 
 interface ShoutOut {
   id: string;
@@ -15,7 +15,6 @@ const FanWall: React.FC = () => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
 
-  // Load messages from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('nestor_fan_wall');
     if (saved) {
@@ -71,7 +70,6 @@ const FanWall: React.FC = () => {
         <p className="text-zinc-400 text-sm mt-1">Lämna din shout-out till bandet och världen.</p>
       </div>
 
-      {/* Input Form */}
       <form onSubmit={handleSubmit} className="bg-zinc-950 p-6 rounded-2xl border-2 border-zinc-800 shadow-xl space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -110,7 +108,6 @@ const FanWall: React.FC = () => {
         </button>
       </form>
 
-      {/* Messages List */}
       <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
         {messages.length === 0 ? (
           <div className="text-center py-12 border-2 border-dashed border-zinc-800 rounded-2xl text-zinc-600">
@@ -124,7 +121,6 @@ const FanWall: React.FC = () => {
             >
               <div className="flex justify-between items-start mb-2">
                 <span className="text-cyan-400 font-bold text-sm flex items-center gap-2 uppercase italic tracking-tighter">
-                  {/* Zap icon now imported correctly */}
                   <Zap size={14} className="fill-cyan-400" /> {msg.name}
                 </span>
                 <span className="text-[9px] font-retro text-zinc-600 flex items-center gap-1">

@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { rewriteAsBallad } from '../services/gemini';
+import { rewriteAsBallad } from '../services/gemini.ts';
 import { Loader2, Music4 } from 'lucide-react';
-import { playSynthSound } from '../services/audio';
+import { playSynthSound } from '../services/audio.ts';
 
 const LyricRewriter: React.FC = () => {
   const [input, setInput] = useState('');

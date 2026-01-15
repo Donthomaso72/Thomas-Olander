@@ -1,8 +1,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { generateRockPersona } from '../services/gemini';
+import { generateRockPersona } from '../services/gemini.ts';
 import { Loader2, User, Utensils, Camera, X, Zap, Check, Share2, AlertTriangle } from 'lucide-react';
-import { playSynthSound } from '../services/audio';
+import { playSynthSound } from '../services/audio.ts';
 
 const RockNameGenerator: React.FC = () => {
   const [name, setName] = useState('');
