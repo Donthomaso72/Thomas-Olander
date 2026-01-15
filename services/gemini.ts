@@ -2,21 +2,20 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 /**
- * Hämtar API-nyckeln på ett säkert sätt.
- * Netlify/Vite kräver ofta prefixet VITE_ för att exponera variabler till klienten.
+ * Hämtar API-nyckeln.
+ * På Netlify MÅSTE variabeln heta VITE_GEMINI_API_KEY för att synas i frontend.
  */
 const getApiKey = () => {
-  // 1. Kolla Vite-standard (Netlify rekommenderar ofta detta)
-  // 2. Kolla process.env (Replit/Node standard)
-  // 3. Kolla window-objektet som nödlösning
-  const key = 
-    (import.meta as any).env?.VITE_GEMINI_API_KEY || 
-    (import.meta as any).env?.API_KEY ||
-    process.env.API_KEY || 
-    "";
+  // @ts-ignore - import.meta.env är standard i Vite/Netlify
+  const viteKey = typeof import.meta !== 'undefined' && (import.meta as any).env ? (import.meta as any).env.VITE_GEMINI_API_KEY : null;
+  
+  // Fallback för andra miljöer
+  const processKey = typeof process !== 'undefined' ? process.env.API_KEY : null;
+  
+  const key = viteKey || processKey || "";
 
   if (!key) {
-    console.error("CRITICAL: API_KEY is missing. Make sure to set VITE_GEMINI_API_KEY in Netlify Environment Variables.");
+    console.error("API_KEY_MISSING: Kontrollera att VITE_GEMINI_API_KEY är satt i Netlify Settings -> Environment Variables.");
   }
   return key;
 };

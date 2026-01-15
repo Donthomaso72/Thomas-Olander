@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Zap, Music, Disc, Flame, Users, Share2, X, Copy, QrCode, ShieldAlert } from 'lucide-react';
+import { Zap, Music, Disc, Flame, Users, Share2, X, Copy, QrCode, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import RockNameGenerator from './components/RockNameGenerator.tsx';
 import LyricRewriter from './components/LyricRewriter.tsx';
@@ -13,6 +13,15 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'name' | 'lyrics' | 'art' | 'trivia' | 'wall'>('name');
   const [showShareModal, setShowShareModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [apiKeyMissing, setApiKeyMissing] = useState(false);
+
+  useEffect(() => {
+    // @ts-ignore
+    const key = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.API_KEY;
+    if (!key) {
+      setApiKeyMissing(true);
+    }
+  }, []);
 
   const handleTabChange = (tab: any) => {
     playSynthSound('click');
@@ -28,6 +37,13 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {apiKeyMissing && (
+        <div className="bg-amber-500 text-black px-4 py-2 text-center font-bold text-xs uppercase flex items-center justify-center gap-2">
+          <AlertTriangle size={16} /> 
+          API-nyckel saknas! Gå till Netlify Site Settings -> Environment Variables och lägg till VITE_GEMINI_API_KEY.
+        </div>
+      )}
+      
       <header className="relative py-10 px-4 border-b-4 border-cyan-500 bg-zinc-950">
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <h1 className="text-6xl md:text-8xl font-rock italic uppercase neon-text mb-2 tracking-tighter">
