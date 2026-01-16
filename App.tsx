@@ -22,7 +22,7 @@ const App: React.FC = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const handleTabChange = (tab: any) => {
+  const handleTabChange = (tab: 'name' | 'lyrics' | 'art' | 'trivia' | 'wall') => {
     playSynthSound('click');
     setActiveTab(tab);
   };
@@ -96,7 +96,7 @@ const App: React.FC = () => {
       )}
 
       <footer className="py-4 bg-black border-t border-zinc-900 text-center font-retro text-[8px] text-zinc-600 uppercase tracking-widest">
-        &copy; 1989-2024 FALKÖPING ROCK CITY - NESTOR FAN PORTAL
+        &copy; 1989-2025 FALKÖPING ROCK CITY - NESTOR FAN PORTAL
       </footer>
     </div>
   );

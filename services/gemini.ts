@@ -1,10 +1,9 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
+// Standardizing API key retrieval for the environment
 const getApiKey = () => {
-  // @ts-ignore
-  const key = import.meta.env?.VITE_GEMINI_API_KEY;
-  return key || "";
+  return process.env.API_KEY || "";
 };
 
 const extractJSON = (text: string) => {
@@ -22,9 +21,8 @@ const extractJSON = (text: string) => {
 
 export const generateRockPersona = async (name: string, favoriteFood: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API_KEY_MISSING");
-
   const ai = new GoogleGenAI({ apiKey });
+  
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Skapa en 80-tals rockstjärne-persona för ${name} som älskar ${favoriteFood}.`,
@@ -48,9 +46,8 @@ export const generateRockPersona = async (name: string, favoriteFood: string) =>
 
 export const rewriteAsBallad = async (input: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API_KEY_MISSING");
-
   const ai = new GoogleGenAI({ apiKey });
+  
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Skriv om detta vardagliga problem till en episk Nestor-ballad: "${input}"`,
@@ -64,10 +61,8 @@ export const rewriteAsBallad = async (input: string) => {
 
 export const generateAlbumArt = async (title: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API_KEY_MISSING");
-
   const ai = new GoogleGenAI({ apiKey });
-  // Uppgraderar till Pro Image för bättre kvalitet
+  
   const response = await ai.models.generateContent({
     model: 'gemini-3-pro-image-preview',
     contents: {
@@ -85,9 +80,14 @@ export const generateAlbumArt = async (title: string) => {
     },
   });
 
-  const part = response.candidates[0].content.parts.find(p => p.inlineData);
-  if (part?.inlineData) {
-    return `data:image/png;base64,${part.inlineData.data}`;
+  // Extracting the image from candidates parts
+  const candidate = response.candidates?.[0];
+  if (candidate?.content?.parts) {
+    const part = candidate.content.parts.find(p => p.inlineData);
+    if (part?.inlineData) {
+      return `data:image/png;base64,${part.inlineData.data}`;
+    }
   }
+  
   throw new Error("Kunde inte generera bild. Försök igen om en stund.");
 };
