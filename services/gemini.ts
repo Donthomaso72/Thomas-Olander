@@ -1,16 +1,10 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
-/**
- * Hämtar API-nyckeln.
- * I Vite/Netlify-miljöer nås den via import.meta.env.VITE_GEMINI_API_KEY.
- */
 const getApiKey = () => {
   // @ts-ignore
-  const key = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!key) {
-    console.error("VITE_GEMINI_API_KEY saknas i miljövariabler!");
-  }
-  return key;
+  const key = import.meta.env?.VITE_GEMINI_API_KEY;
+  return key || "";
 };
 
 const extractJSON = (text: string) => {
@@ -22,27 +16,28 @@ const extractJSON = (text: string) => {
     return JSON.parse(text.trim());
   } catch (e) {
     console.error("JSON Extraction Error:", e);
-    throw new Error("Kunde inte tolka rock-datan.");
+    throw new Error("Kunde inte tolka rock-datan från AI Studio.");
   }
 };
 
 export const generateRockPersona = async (name: string, favoriteFood: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API key is missing. Please check VITE_GEMINI_API_KEY.");
+  if (!apiKey) throw new Error("API_KEY_MISSING");
 
   const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: `Generate a fun 80s hard rock stage name and persona for someone named "${name}" who likes "${favoriteFood}". Return ONLY a JSON object.`,
+    contents: `Skapa en 80-tals rockstjärne-persona för ${name} som älskar ${favoriteFood}.`,
     config: {
+      systemInstruction: "Du är en legendarisk manager från 1989. Du älskar svensk AOR och band som Nestor. Använd uttryck som 'Grymt!', 'Helt magiskt!' och 'Rock on!'. Svara strikt med JSON.",
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          stageName: { type: Type.STRING },
-          role: { type: Type.STRING },
-          instrument: { type: Type.STRING },
-          backstory: { type: Type.STRING }
+          stageName: { type: Type.STRING, description: "Ett kraftfullt artistnamn" },
+          role: { type: Type.STRING, description: "Position i bandet" },
+          instrument: { type: Type.STRING, description: "Klassiskt 80-talsinstrument" },
+          backstory: { type: Type.STRING, description: "En historia med referenser till Falköping, 80-talet och hårspray." }
         },
         required: ["stageName", "role", "instrument", "backstory"]
       }
@@ -53,32 +48,40 @@ export const generateRockPersona = async (name: string, favoriteFood: string) =>
 
 export const rewriteAsBallad = async (input: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API key is missing.");
+  if (!apiKey) throw new Error("API_KEY_MISSING");
 
   const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: `Rewrite this as a dramatic 80s power ballad in the style of the band Nestor: "${input}". Use [Verse] and [Chorus] markers.`,
+    contents: `Skriv om detta vardagliga problem till en episk Nestor-ballad: "${input}"`,
+    config: {
+      systemInstruction: "Du skriver texter i samma anda som Nestors 'Kids in a Ghost Town'. Fokusera på nostalgi, barndomsvänner och att aldrig ge upp sina drömmar. Använd [Verse], [Chorus] och beskriv var ett gitarrsolo kommer in.",
+      temperature: 0.9,
+    }
   });
   return response.text;
 };
 
 export const generateAlbumArt = async (title: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API key is missing.");
+  if (!apiKey) throw new Error("API_KEY_MISSING");
 
   const ai = new GoogleGenAI({ apiKey });
+  // Uppgraderar till Pro Image för bättre kvalitet
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
+    model: 'gemini-3-pro-image-preview',
     contents: {
       parts: [
         {
-          text: `An 80s melodic hard rock album cover for the band NESTOR. Title: "${title}". Neon pink, cyan, chrome, grid background, retro futuristic.`,
+          text: `A high-quality 80s melodic rock album cover. Title: "${title}". Band: NESTOR. Style: Retro-futuristic, neon lights, grid floors, Falköping city vibes at night, chrome typography, vibrant pink and cyan palette. Cinematic lighting, highly detailed.`,
         },
       ],
     },
     config: {
-      imageConfig: { aspectRatio: "1:1" }
+      imageConfig: {
+        aspectRatio: "1:1",
+        imageSize: "1K"
+      }
     },
   });
 
@@ -86,5 +89,5 @@ export const generateAlbumArt = async (title: string) => {
   if (part?.inlineData) {
     return `data:image/png;base64,${part.inlineData.data}`;
   }
-  throw new Error("Ingen bild kunde skapas.");
+  throw new Error("Kunde inte generera bild. Försök igen om en stund.");
 };

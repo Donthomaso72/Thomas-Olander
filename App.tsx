@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Music, Disc, Flame, Users, Share2, X, AlertTriangle } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import RockNameGenerator from './components/RockNameGenerator.tsx';
 import LyricRewriter from './components/LyricRewriter.tsx';
@@ -7,6 +6,16 @@ import AlbumArtGenerator from './components/AlbumArtGenerator.tsx';
 import TriviaGame from './components/TriviaGame.tsx';
 import FanWall from './components/FanWall.tsx';
 import { playSynthSound } from './services/audio.ts';
+import { 
+  Zap as ZapIcon, 
+  Music as MusicIcon, 
+  Disc as DiscIcon, 
+  Flame as FlameIcon, 
+  Users as UsersIcon, 
+  Share2 as ShareIcon, 
+  X as XIcon, 
+  AlertTriangle as AlertIcon 
+} from 'lucide-react';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'name' | 'lyrics' | 'art' | 'trivia' | 'wall'>('name');
@@ -15,10 +24,14 @@ const App: React.FC = () => {
   const [apiKeyMissing, setApiKeyMissing] = useState(false);
 
   useEffect(() => {
+    // Kontrollera om nyckeln finns tillgänglig i webbläsarmiljön
     // @ts-ignore
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const apiKey = import.meta.env?.VITE_GEMINI_API_KEY;
     if (!apiKey) {
       setApiKeyMissing(true);
+      console.error("VITE_GEMINI_API_KEY hittades inte. Kontrollera Netlify-inställningarna och gör en 'Clear cache and deploy'.");
+    } else {
+      setApiKeyMissing(false);
     }
   }, []);
 
@@ -37,15 +50,15 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {apiKeyMissing && (
-        <div className="fixed top-0 left-0 w-full bg-red-600 text-white px-4 py-2 text-center font-bold text-[10px] uppercase flex items-center justify-center gap-2 z-[200] border-b-2 border-black">
-          <AlertTriangle size={16} /> 
-          <span>STRÖMAVBROTT! Lägg till VITE_GEMINI_API_KEY i Netlify Site Settings!</span>
+        <div className="fixed top-0 left-0 w-full bg-red-600 text-white px-4 py-3 text-center font-bold text-[10px] uppercase flex items-center justify-center gap-2 z-[200] border-b-2 border-black shadow-2xl">
+          <AlertIcon size={16} className="animate-pulse" /> 
+          <span>STRÖMAVBROTT! Kör "Clear cache and deploy site" i Netlify för att aktivera din nyckel!</span>
         </div>
       )}
       
-      <header className={`relative py-10 px-4 border-b-4 border-cyan-500 bg-zinc-950 ${apiKeyMissing ? 'mt-8' : ''}`}>
+      <header className={`relative py-10 px-4 border-b-4 border-cyan-500 bg-zinc-950 transition-all duration-500 ${apiKeyMissing ? 'mt-12' : ''}`}>
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          <h1 className="text-6-xl md:text-8xl font-rock italic uppercase neon-text mb-2 tracking-tighter">
+          <h1 className="text-6xl md:text-8xl font-rock italic uppercase neon-text mb-2 tracking-tighter">
             NESTOR
           </h1>
           <p className="font-retro text-cyan-400 tracking-[0.3em] uppercase animate-pulse text-[10px] md:text-xs">
@@ -55,18 +68,18 @@ const App: React.FC = () => {
             onClick={() => setShowShareModal(true)}
             className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-pink-600/20 border-2 border-pink-500 rounded-full text-pink-500 font-retro text-[9px] uppercase hover:bg-pink-500 hover:text-white transition-all shadow-lg"
           >
-            <Share2 size={14} /> Dela Upplevelsen
+            <ShareIcon size={14} /> Dela Upplevelsen
           </button>
         </div>
       </header>
 
       <nav className="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-pink-500/30">
         <div className="max-w-4xl mx-auto px-2 flex justify-center gap-1 md:gap-4 py-3 overflow-x-auto no-scrollbar">
-          <NavButton active={activeTab === 'name'} onClick={() => handleTabChange('name')} icon={<Zap size={18} />} label="Persona" />
-          <NavButton active={activeTab === 'lyrics'} onClick={() => handleTabChange('lyrics')} icon={<Music size={18} />} label="Ballad" />
-          <NavButton active={activeTab === 'art'} onClick={() => handleTabChange('art')} icon={<Disc size={18} />} label="Design" />
-          <NavButton active={activeTab === 'trivia'} onClick={() => handleTabChange('trivia')} icon={<Flame size={18} />} label="Quiz" />
-          <NavButton active={activeTab === 'wall'} onClick={() => handleTabChange('wall')} icon={<Users size={18} />} label="Fans" />
+          <NavButton active={activeTab === 'name'} onClick={() => handleTabChange('name')} icon={<ZapIcon size={18} />} label="Persona" />
+          <NavButton active={activeTab === 'lyrics'} onClick={() => handleTabChange('lyrics')} icon={<MusicIcon size={18} />} label="Ballad" />
+          <NavButton active={activeTab === 'art'} onClick={() => handleTabChange('art')} icon={<DiscIcon size={18} />} label="Design" />
+          <NavButton active={activeTab === 'trivia'} onClick={() => handleTabChange('trivia')} icon={<FlameIcon size={18} />} label="Quiz" />
+          <NavButton active={activeTab === 'wall'} onClick={() => handleTabChange('wall')} icon={<UsersIcon size={18} />} label="Fans" />
         </div>
       </nav>
 
@@ -84,7 +97,7 @@ const App: React.FC = () => {
         <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-zinc-900 border-2 border-pink-500 p-8 rounded-[2rem] max-w-sm w-full relative">
             <button onClick={() => setShowShareModal(false)} className="absolute top-4 right-4 text-zinc-500 hover:text-white">
-              <X size={24} />
+              <XIcon size={24} />
             </button>
             <div className="text-center space-y-6">
               <h3 className="text-3xl font-rock text-white uppercase italic neon-text">Sprid Rocken!</h3>
