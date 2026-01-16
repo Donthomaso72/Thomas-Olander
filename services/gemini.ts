@@ -1,20 +1,14 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 /**
- * Hämtar API-nyckeln från miljövariabler.
- * På Netlify används VITE_GEMINI_API_KEY.
+ * Hämtar API-nyckeln.
+ * I Vite/Netlify-miljöer nås den via import.meta.env.VITE_GEMINI_API_KEY.
  */
 const getApiKey = () => {
-  // @ts-ignore - Miljövariabel i Vite/Netlify
-  const viteKey = import.meta.env?.VITE_GEMINI_API_KEY;
-  
-  // Fallback för andra miljöer
-  const processKey = typeof process !== 'undefined' ? process.env.API_KEY : null;
-  
-  const key = viteKey || processKey || "";
-
+  // @ts-ignore
+  const key = import.meta.env.VITE_GEMINI_API_KEY;
   if (!key) {
-    console.error("Saknar API-nyckel: VITE_GEMINI_API_KEY ej hittad.");
+    console.error("VITE_GEMINI_API_KEY saknas i miljövariabler!");
   }
   return key;
 };
@@ -34,7 +28,7 @@ const extractJSON = (text: string) => {
 
 export const generateRockPersona = async (name: string, favoriteFood: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API_KEY_MISSING");
+  if (!apiKey) throw new Error("API key is missing. Please check VITE_GEMINI_API_KEY.");
 
   const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
@@ -59,7 +53,7 @@ export const generateRockPersona = async (name: string, favoriteFood: string) =>
 
 export const rewriteAsBallad = async (input: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API_KEY_MISSING");
+  if (!apiKey) throw new Error("API key is missing.");
 
   const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
@@ -71,7 +65,7 @@ export const rewriteAsBallad = async (input: string) => {
 
 export const generateAlbumArt = async (title: string) => {
   const apiKey = getApiKey();
-  if (!apiKey) throw new Error("API_KEY_MISSING");
+  if (!apiKey) throw new Error("API key is missing.");
 
   const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({

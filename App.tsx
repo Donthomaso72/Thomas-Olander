@@ -15,14 +15,10 @@ const App: React.FC = () => {
   const [apiKeyMissing, setApiKeyMissing] = useState(false);
 
   useEffect(() => {
-    // Check for standard Netlify/Vite env var
     // @ts-ignore
-    const viteKey = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GEMINI_API_KEY : null;
-    
-    if (!viteKey) {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
       setApiKeyMissing(true);
-    } else {
-      setApiKeyMissing(false);
     }
   }, []);
 
@@ -41,18 +37,15 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {apiKeyMissing && (
-        <div className="bg-red-600 text-white px-4 py-4 text-center font-bold text-[10px] md:text-xs uppercase flex flex-col md:flex-row items-center justify-center gap-2 z-[200] border-b-2 border-black">
-          <div className="flex items-center gap-2 animate-pulse">
-            <AlertTriangle size={20} /> 
-            <span>STRÖMAVBROTT I FALKÖPING!</span>
-          </div>
-          <span className="opacity-90">Lägg till <code className="bg-black/20 px-1 rounded text-white font-mono">VITE_GEMINI_API_KEY</code> i Netlify Site Settings!</span>
+        <div className="fixed top-0 left-0 w-full bg-red-600 text-white px-4 py-2 text-center font-bold text-[10px] uppercase flex items-center justify-center gap-2 z-[200] border-b-2 border-black">
+          <AlertTriangle size={16} /> 
+          <span>STRÖMAVBROTT! Lägg till VITE_GEMINI_API_KEY i Netlify Site Settings!</span>
         </div>
       )}
       
-      <header className="relative py-10 px-4 border-b-4 border-cyan-500 bg-zinc-950">
+      <header className={`relative py-10 px-4 border-b-4 border-cyan-500 bg-zinc-950 ${apiKeyMissing ? 'mt-8' : ''}`}>
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          <h1 className="text-6xl md:text-8xl font-rock italic uppercase neon-text mb-2 tracking-tighter">
+          <h1 className="text-6-xl md:text-8xl font-rock italic uppercase neon-text mb-2 tracking-tighter">
             NESTOR
           </h1>
           <p className="font-retro text-cyan-400 tracking-[0.3em] uppercase animate-pulse text-[10px] md:text-xs">
