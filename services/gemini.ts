@@ -1,27 +1,23 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Standardizing API key retrieval for the environment
-const getApiKey = () => {
-  return process.env.API_KEY || "";
-};
-
 const extractJSON = (text: string) => {
   try {
+    // Attempt to parse directly first
+    return JSON.parse(text.trim());
+  } catch (e) {
+    // Fallback for markdown blocks if any
     const markdownMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
     if (markdownMatch) return JSON.parse(markdownMatch[1]);
     const braceMatch = text.match(/\{[\s\S]*\}/);
     if (braceMatch) return JSON.parse(braceMatch[0]);
-    return JSON.parse(text.trim());
-  } catch (e) {
-    console.error("JSON Extraction Error:", e);
     throw new Error("Kunde inte tolka rock-datan från AI Studio.");
   }
 };
 
 export const generateRockPersona = async (name: string, favoriteFood: string) => {
-  const apiKey = getApiKey();
-  const ai = new GoogleGenAI({ apiKey });
+  // Initialize inside the function to ensure the latest API key is used
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
@@ -41,12 +37,12 @@ export const generateRockPersona = async (name: string, favoriteFood: string) =>
       }
     }
   });
+
   return extractJSON(response.text);
 };
 
 export const rewriteAsBallad = async (input: string) => {
-  const apiKey = getApiKey();
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
@@ -60,8 +56,7 @@ export const rewriteAsBallad = async (input: string) => {
 };
 
 export const generateAlbumArt = async (title: string) => {
-  const apiKey = getApiKey();
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
     model: 'gemini-3-pro-image-preview',
@@ -80,12 +75,13 @@ export const generateAlbumArt = async (title: string) => {
     },
   });
 
-  // Extracting the image from candidates parts
+  // Correct extraction for gemini-3-pro-image-preview (iterating through parts)
   const candidate = response.candidates?.[0];
   if (candidate?.content?.parts) {
-    const part = candidate.content.parts.find(p => p.inlineData);
-    if (part?.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
+    for (const part of candidate.content.parts) {
+      if (part.inlineData) {
+        return `data:image/png;base64,${part.inlineData.data}`;
+      }
     }
   }
   
