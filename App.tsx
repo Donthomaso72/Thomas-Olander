@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import RockNameGenerator from './components/RockNameGenerator.tsx';
 import LyricRewriter from './components/LyricRewriter.tsx';
@@ -13,27 +14,13 @@ import {
   Flame as FlameIcon, 
   Users as UsersIcon, 
   Share2 as ShareIcon, 
-  X as XIcon, 
-  AlertTriangle as AlertIcon 
+  X as XIcon 
 } from 'lucide-react';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'name' | 'lyrics' | 'art' | 'trivia' | 'wall'>('name');
   const [showShareModal, setShowShareModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [apiKeyMissing, setApiKeyMissing] = useState(false);
-
-  useEffect(() => {
-    // Kontrollera om nyckeln finns tillgänglig i webbläsarmiljön
-    // @ts-ignore
-    const apiKey = import.meta.env?.VITE_GEMINI_API_KEY;
-    if (!apiKey) {
-      setApiKeyMissing(true);
-      console.error("VITE_GEMINI_API_KEY hittades inte. Kontrollera Netlify-inställningarna och gör en 'Clear cache and deploy'.");
-    } else {
-      setApiKeyMissing(false);
-    }
-  }, []);
 
   const handleTabChange = (tab: any) => {
     playSynthSound('click');
@@ -49,14 +36,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {apiKeyMissing && (
-        <div className="fixed top-0 left-0 w-full bg-red-600 text-white px-4 py-3 text-center font-bold text-[10px] uppercase flex items-center justify-center gap-2 z-[200] border-b-2 border-black shadow-2xl">
-          <AlertIcon size={16} className="animate-pulse" /> 
-          <span>STRÖMAVBROTT! Kör "Clear cache and deploy site" i Netlify för att aktivera din nyckel!</span>
-        </div>
-      )}
-      
-      <header className={`relative py-10 px-4 border-b-4 border-cyan-500 bg-zinc-950 transition-all duration-500 ${apiKeyMissing ? 'mt-12' : ''}`}>
+      <header className="relative py-10 px-4 border-b-4 border-cyan-500 bg-zinc-950 transition-all duration-500">
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <h1 className="text-6xl md:text-8xl font-rock italic uppercase neon-text mb-2 tracking-tighter">
             NESTOR
